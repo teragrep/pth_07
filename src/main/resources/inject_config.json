@@ -1,0 +1,413 @@
+{
+  "className": "com.teragrep.pth_07.DPLInterpreter",
+  "defaultInterpreter": true,
+  "editor": {
+    "completionKey": "TAB",
+    "completionSupport": true,
+    "editOnDblClick": false,
+    "language": "dpl"
+  },
+  "group": "spark",
+  "name": "dpl",
+  "properties": {
+    "dpl.Streaming.mode": {
+      "defaultValue": true,
+      "description": "Select streaming mode. true=Continuous streaming/ false=Single shot",
+      "envName": "",
+      "propertyName": "dpl.continuous",
+      "type": "checkbox"
+    },
+    "dpl.archive.db.journaldb.name": {
+      "defaultValue": "journaldb",
+      "description": "name of the journal schema",
+      "envName": "",
+      "propertyName": "dpl.archive.db.journaldb.name",
+      "type": "string"
+    },
+    "dpl.archive.db.password": {
+      "defaultValue": "streamdbUserPassw0rd",
+      "description": "database password for authenticating to streamdb database",
+      "envName": "",
+      "propertyName": "dpl.archive.db.password",
+      "type": "string"
+    },
+    "dpl.archive.db.streamdb.name": {
+      "defaultValue": "streamdb",
+      "description": "name of the stream schema",
+      "envName": "",
+      "propertyName": "dpl.archive.db.streamdb.name",
+      "type": "string"
+    },
+    "dpl.archive.db.url": {
+      "defaultValue": "jdbc:mariadb://dbhost.domain.tld:3306/streamdb",
+      "description": "URL to streamdb database, including the database name",
+      "envName": "",
+      "propertyName": "dpl.archive.db.url",
+      "type": "string"
+    },
+    "dpl.archive.db.username": {
+      "defaultValue": "streamdb_user",
+      "description": "database username for authenticating to streamdb database",
+      "envName": "",
+      "propertyName": "dpl.archive.db.username",
+      "type": "string"
+    },
+    "dpl.archive.enabled": {
+      "defaultValue": true,
+      "description": "Enable Archive queries",
+      "envName": "",
+      "propertyName": "dpl.archive.enabled",
+      "type": "checkbox"
+    },
+    "dpl.archive.executor.number": {
+      "defaultValue": "1",
+      "description": "Archive executor node count.",
+      "envName": "",
+      "propertyName": "dpl.archive.executor.number",
+      "type": "number"
+    },
+    "dpl.ignoreParserFailures": {
+      "defaultValue": false,
+      "description": "Should parser failures be ignored",
+      "envName": "",
+      "propertyName": "dpl.ignoreParserFailures",
+      "type": "checkbox"
+    },
+    "dpl.kafka.enabled": {
+      "defaultValue": true,
+      "description": "Enable Kafka queries",
+      "envName": "",
+      "propertyName": "dpl.kafka.enabled",
+      "type": "checkbox"
+    },
+    "dpl.kafka.maxOffsetsPerTrigger": {
+      "defaultValue": 200000,
+      "description": "Batch size Kafka queries. Default is 200000.",
+      "envName": "",
+      "propertyName": "dpl.kafka.maxOffsetsPerTrigger",
+      "type": "number"
+    },
+    "dpl.pth_06.archive.db.hideDatabaseExceptions": {
+      "defaultValue": "false",
+      "description": "Hide database exceptions arising from incorrect data",
+      "envName": "",
+      "propertyName": "dpl.pth_06.archive.db.hideDatabaseExceptions",
+      "type": "checkbox"
+    },
+    "dpl.pth_06.archive.db.journaldb.name": {
+      "defaultValue": "journaldb",
+      "description": "Teragrep Datasource Archive Database journaldb schema name",
+      "envName": "",
+      "propertyName": "dpl.pth_06.archive.db.journaldb.name",
+      "type": "string"
+    },
+    "dpl.pth_06.archive.db.password": {
+      "defaultValue": "streamdb_pass",
+      "description": "Teragrep Datasource Archive Database password",
+      "envName": "",
+      "propertyName": "dpl.pth_06.archive.db.password",
+      "type": "string"
+    },
+    "dpl.pth_06.archive.db.streamdb.name": {
+      "defaultValue": "streamdb",
+      "description": "Teragrep Datasource Archive Database streamdb schema name",
+      "envName": "",
+      "propertyName": "dpl.pth_06.archive.db.streamdb.name",
+      "type": "string"
+    },
+    "dpl.pth_06.archive.db.url": {
+      "defaultValue": "jdbc:mariadb://mariadb.example.com:3306/streamdb",
+      "description": "Teragrep Datasource Archive Database URL",
+      "envName": "",
+      "propertyName": "dpl.pth_06.archive.db.url",
+      "type": "string"
+    },
+    "dpl.pth_06.archive.db.username": {
+      "defaultValue": "streamdb_user",
+      "description": "Teragrep Datasource Archive Database username",
+      "envName": "",
+      "propertyName": "dpl.pth_06.archive.db.username",
+      "type": "string"
+    },
+    "dpl.pth_06.archive.enabled": {
+      "defaultValue": "true",
+      "description": "Enable Teragrep Datasource Archive module",
+      "envName": "",
+      "propertyName": "dpl.pth_06.archive.enabled",
+      "type": "checkbox"
+    },
+    "dpl.pth_06.archive.s3.skipNonRFC5424Files": {
+      "defaultValue": "false",
+      "description": "Skip non-rfc5424 files which for parse fails ",
+      "envName": "",
+      "propertyName": "dpl.pth_06.archive.s3.skipNonRFC5424Files",
+      "type": "checkbox"
+    },
+    "dpl.pth_06.enabled": {
+      "defaultValue": "true",
+      "description": "Enable Teragrep Datasource",
+      "envName": "",
+      "propertyName": "dpl.pth_06.enabled",
+      "type": "checkbox"
+    },
+    "dpl.pth_06.kafka.bootstrap.servers": {
+      "defaultValue": "node3.example.com:9094,node4.example.com:9094,node5.example.com:9094",
+      "description": "Teragrep Datasource Kafka bootstrap servers",
+      "envName": "",
+      "propertyName": "dpl.pth_06.kafka.bootstrap.servers",
+      "type": "string"
+    },
+    "dpl.pth_06.kafka.continuousProcessing": {
+      "defaultValue": "false",
+      "description": "Enable Teragrep Datasource Kafka continuousProcessing (experimental)",
+      "envName": "",
+      "propertyName": "dpl.pth_06.kafka.continuousProcessing",
+      "type": "checkbox"
+    },
+    "dpl.pth_06.kafka.enabled": {
+      "defaultValue": "true",
+      "description": "Enable Teragrep Datasource Kafka module",
+      "envName": "",
+      "propertyName": "dpl.pth_06.kafka.enabled",
+      "type": "checkbox"
+    },
+    "dpl.pth_06.kafka.fetch.max.bytes": {
+      "defaultValue": "52428800",
+      "description": "Teragrep Datasource Kafka executor fetch max bytes",
+      "envName": "",
+      "propertyName": "dpl.pth_06.kafka.fetch.max.bytes",
+      "type": "string"
+    },
+    "dpl.pth_06.kafka.fetch.max.wait.ms": {
+      "defaultValue": "120000",
+      "description": "Teragrep Datasource Kafka executor fetch max wait",
+      "envName": "",
+      "propertyName": "dpl.pth_06.kafka.fetch.max.wait.ms",
+      "type": "string"
+    },
+    "dpl.pth_06.kafka.max.partition.fetch.bytes": {
+      "defaultValue": "1048576",
+      "description": "Teragrep Datasource Kafka executor partition fetch bytes",
+      "envName": "",
+      "propertyName": "dpl.pth_06.kafka.max.partition.fetch.bytes",
+      "type": "string"
+    },
+    "dpl.pth_06.kafka.max.poll.records": {
+      "defaultValue": "64000",
+      "description": "Teragrep Datasource Kafka executor max records per poll",
+      "envName": "",
+      "propertyName": "dpl.pth_06.kafka.max.poll.records",
+      "type": "string"
+    },
+    "dpl.pth_06.kafka.sasl.mechanism": {
+      "defaultValue": "PLAIN",
+      "description": "Teragrep Datasource Kafka SASL mechanism",
+      "envName": "",
+      "propertyName": "dpl.pth_06.kafka.sasl.mechanism",
+      "type": "string"
+    },
+    "dpl.pth_06.kafka.security.protocol": {
+      "defaultValue": "SASL_PLAINTEXT",
+      "description": "Teragrep Datasource Kafka security protocol",
+      "envName": "",
+      "propertyName": "dpl.pth_06.kafka.security.protocol",
+      "type": "string"
+    },
+    "dpl.pth_06.partitions": {
+      "defaultValue": "24",
+      "description": "Teragrep Datasource Partition Count (spark.dynamicAllocation.maxExecutors must be higher for decent performance!)",
+      "envName": "",
+      "propertyName": "dpl.pth_06.partitions",
+      "type": "string"
+    },
+    "dpl.pth_06.transition.enabled": {
+      "defaultValue": "true",
+      "description": "Enable Teragrep Datasource transition between Kafka and Archive",
+      "envName": "",
+      "propertyName": "dpl.pth_06.transition.enabled",
+      "type": "checkbox"
+    },
+    "dpl.pth_06.transition.hoursago": {
+      "defaultValue": "2",
+      "description": "Teragrep Datasource transition point hours ago",
+      "envName": "",
+      "propertyName": "dpl.pth_06.transition.hoursago",
+      "type": "number"
+    },
+    "dpl.pth_07.checkCompletion": {
+      "defaultValue": true,
+      "description": "Toggle DPL query completion, defaults to true",
+      "envName": "",
+      "propertyName": "dpl.pth_07.checkCompletion",
+      "type": "checkbox"
+    },
+    "dpl.pth_10.transform.iplocation.db.path": {
+      "defaultValue": "/usr/share/GeoIP/GeoLite2-City.mmdb",
+      "description": "MaxMind DB file path used for the iplocation dpl command. Can be of GeoIP2 or rir-data db type.",
+      "envName": "",
+      "propertyName": "dpl.pth_10.transform.iplocation.db.path",
+      "type": "string"
+    },
+    "dpl.pth_10.transform.sendemail.parameter.from": {
+      "defaultValue": "teragrep@localhost.localdomain",
+      "description": "From address for sendemail command",
+      "envName": "",
+      "propertyName": "dpl.pth_10.transform.sendemail.parameter.from",
+      "type": "string"
+    },
+    "dpl.pth_10.transform.sendemail.restrictedMode": {
+      "defaultValue": true,
+      "description": "Limit functional parameters of sendemail command to 'to' and 'subject'",
+      "envName": "",
+      "propertyName": "dpl.pth_10.transform.sendemail.restrictedMode",
+      "type": "checkbox"
+    },
+    "dpl.pth_10.transform.teragrep.kafka.save.bootstrap.servers": {
+      "defaultValue": "node3.example.com:9094,node4.example.com:9094,node5.example.com:9094",
+      "description": "Kafka bootstrap servers for teragrep kafka save command as comma-delimited list",
+      "envName": "",
+      "propertyName": "dpl.pth_10.transform.teragrep.kafka.save.bootstrap.servers",
+      "type": "string"
+    },
+    "dpl.pth_10.transform.teragrep.kafka.save.sasl.mechanism": {
+      "defaultValue": "PLAIN",
+      "description": "Sasl mechanism for teragrep kafka save command",
+      "envName": "",
+      "propertyName": "dpl.pth_10.transform.teragrep.kafka.save.sasl.mechanism",
+      "type": "string"
+    },
+    "dpl.pth_10.transform.teragrep.kafka.save.security.protocol": {
+      "defaultValue": "SASL_PLAINTEXT",
+      "description": "Security protocol for teragrep kafka save command",
+      "envName": "",
+      "propertyName": "dpl.pth_10.transform.teragrep.kafka.save.security.protocol",
+      "type": "string"
+    },
+    "dpl.recall-size": {
+      "defaultValue": "100",
+      "description": "Recall size for limiting results for n-top items. Default is 100",
+      "envName": "",
+      "propertyName": "dpl.recall-size",
+      "type": "number"
+    },
+    "dpl.smtp.debug": {
+      "defaultValue": false,
+      "description": "Enable SMTP debugging, defaults to false",
+      "envName": "",
+      "propertyName": "dpl.smtp.debug",
+      "type": "checkbox"
+    },
+    "dpl.smtp.encryption": {
+      "defaultValue": "PLAIN",
+      "description": "Encryption mode. Possible values are PLAIN, SSL or TLS. Other values will result in an exception.",
+      "envName": "",
+      "propertyName": "dpl.smtp.encryption",
+      "type": "string"
+    },
+    "dpl.smtp.password": {
+      "defaultValue": "password",
+      "description": "Email server password. Value is ignored if server allows anonymous logins",
+      "envName": "",
+      "propertyName": "dpl.smtp.password",
+      "type": "string"
+    },
+    "dpl.smtp.server": {
+      "defaultValue": "localhost:25",
+      "description": "Email server address",
+      "envName": "",
+      "propertyName": "dpl.smtp.server",
+      "type": "string"
+    },
+    "dpl.smtp.username": {
+      "defaultValue": "username",
+      "description": "Email server username. Value is ignored if server allows anonymous logins",
+      "envName": "",
+      "propertyName": "dpl.smtp.username",
+      "type": "string"
+    },
+    "dpl.source.kafka-bootstrap-servers": {
+      "defaultValue": "localhost:700, localhost:7001, localhost:7002",
+      "description": "Source kafka servers",
+      "envName": "",
+      "propertyName": "dpl.source-kafka-bootstrap-servers",
+      "type": "string"
+    },
+    "dpl.source.kafka.sasl.mechanism": {
+      "defaultValue": "PLAIN",
+      "description": "Source kafka sasl mechanism, default PLAIN",
+      "envName": "",
+      "propertyName": "dpl.souce.kafka.sasl.mechanism",
+      "type": "string"
+    },
+    "dpl.source.kafka.security.protocol": {
+      "defaultValue": "SASL_PLAINTEXT",
+      "description": "Source kafka security protocol",
+      "envName": "",
+      "propertyName": "dpl.source.kafkasecurity.protocol",
+      "type": "string"
+    },
+    "dpl.stacktrace": {
+      "defaultValue": true,
+      "description": "Enable full stacktrace",
+      "envName": "",
+      "propertyName": "dpl.stacktrace",
+      "type": "checkbox"
+    },
+    "dpl.verbose": {
+      "defaultValue": true,
+      "description": "Set returned data fields. False returns only _raw and timestamp. True returns all parsed fields.",
+      "envName": "",
+      "propertyName": "dpl.verbose",
+      "type": "checkbox"
+    },
+    "dpl.web.url": {
+      "defaultValue": "http://localhost:8080",
+      "description": "Web url for this Teragrep instance",
+      "envName": "",
+      "propertyName": "dpl.web.url",
+      "type": "string"
+    },
+    "fs.s3a.access.key": {
+      "defaultValue": "AKIAIOSFODNN7EXAMPLE",
+      "description": "S3 access key",
+      "envName": "",
+      "propertyName": "fs.s3a.access.key",
+      "type": "string"
+    },
+    "fs.s3a.aws.credentials.provider": {
+      "defaultValue": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
+      "description": "S3 credentiald provider",
+      "envName": "",
+      "propertyName": "fs.s3a.aws.credentials.provider",
+      "type": "string"
+    },
+    "fs.s3a.connection.ssl.enabled": {
+      "defaultValue": true,
+      "description": "ssh enabled for S3",
+      "envName": "",
+      "propertyName": "fs.s3a.connection.ssl.enabled",
+      "type": "checkbox"
+    },
+    "fs.s3a.endpoint": {
+      "defaultValue": "s3proxy-nodeport.default.svc.cluster.local:9000",
+      "description": "S3 endpoint",
+      "envName": "",
+      "propertyName": "fs.s3a.endpoint",
+      "type": "string"
+    },
+    "fs.s3a.impl": {
+      "defaultValue": "org.apache.hadoop.fs.s3a.S3AFileSystem",
+      "description": "S3 connector implementation",
+      "envName": "",
+      "propertyName": "fs.s3a.impl",
+      "type": "string"
+    },
+    "fs.s3a.secret.key": {
+      "defaultValue": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "description": "S3 secret key",
+      "envName": "",
+      "propertyName": "fs.s3a.impl",
+      "type": "string"
+    }
+  }
+}
