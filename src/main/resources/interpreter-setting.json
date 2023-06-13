@@ -1,0 +1,754 @@
+[
+  {
+    "group": "spark",
+    "name": "spark",
+    "className": "org.apache.zeppelin.spark.SparkInterpreter",
+    "properties": {
+      "SPARK_HOME": {
+        "envName": "SPARK_HOME",
+        "propertyName": "SPARK_HOME",
+        "defaultValue": "",
+        "description": "Location of spark distribution",
+        "type": "string"
+      },
+      "spark.master": {
+        "envName": "SPARK_MASTER",
+        "propertyName": "spark.master",
+        "defaultValue": "local[*]",
+        "description": "Spark master uri. local | yarn-client | yarn-cluster | spark master address of standalone mode, ex) spark://master_host:7077",
+        "type": "string"
+      },
+      "spark.submit.deployMode": {
+        "envName": "",
+        "propertyName": "spark.submit.deployMode",
+        "defaultValue": "",
+        "description": "The deploy mode of Spark driver program, either \"client\" or \"cluster\", Which means to launch driver program locally (\"client\") or remotely (\"cluster\") on one of the nodes inside the cluster.",
+        "type": "string"
+      },
+      "spark.app.name": {
+        "envName": "",
+        "propertyName": "spark.app.name",
+        "defaultValue": "Zeppelin",
+        "description": "The name of spark application.",
+        "type": "string"
+      },
+      "spark.driver.cores": {
+        "envName": "",
+        "propertyName": "spark.driver.cores",
+        "defaultValue": "1",
+        "description": "Number of cores to use for the driver process, only in cluster mode.",
+        "type": "number"
+      },
+      "spark.driver.memory": {
+        "envName": "",
+        "propertyName": "spark.driver.memory",
+        "defaultValue": "1g",
+        "description": "Amount of memory to use for the driver process, i.e. where SparkContext is initialized, in the same format as JVM memory strings with a size unit suffix (\"k\", \"m\", \"g\" or \"t\") (e.g. 512m, 2g).",
+        "type": "string"
+      },
+      "spark.executor.cores": {
+        "envName": null,
+        "propertyName": "spark.executor.cores",
+        "defaultValue": "1",
+        "description": "The number of cores to use on each executor",
+        "type": "number"
+      },
+      "spark.executor.memory": {
+        "envName": null,
+        "propertyName": "spark.executor.memory",
+        "defaultValue": "1g",
+        "description": "Executor memory per worker instance. ex) 512m, 32g",
+        "type": "string"
+      },
+      "spark.files": {
+        "envName": null,
+        "propertyName": "spark.files",
+        "defaultValue": "",
+        "description": "Comma-separated list of files to be placed in the working directory of each executor. Globs are allowed.",
+        "type": "string"
+      },
+      "spark.jars": {
+        "envName": null,
+        "propertyName": "spark.jars",
+        "defaultValue": "",
+        "description": "Comma-separated list of jars to include on the driver and executor classpaths. Globs are allowed.",
+        "type": "string"
+      },
+      "spark.jars.packages": {
+        "envName": null,
+        "propertyName": "spark.jars.packages",
+        "defaultValue": "",
+        "description": "Comma-separated list of Maven coordinates of jars to include on the driver and executor classpaths. The coordinates should be groupId:artifactId:version. If spark.jars.ivySettings is given artifacts will be resolved according to the configuration in the file, otherwise artifacts will be searched for in the local maven repo, then maven central and finally any additional remote repositories given by the command-line option --repositories.",
+        "type": "string"
+      },
+      "zeppelin.spark.useHiveContext": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.useHiveContext",
+        "defaultValue": true,
+        "description": "Use HiveContext instead of SQLContext if it is true. Enable hive for SparkSession.",
+        "type": "checkbox"
+      },
+      "zeppelin.spark.printREPLOutput": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.printREPLOutput",
+        "defaultValue": true,
+        "description": "Print scala REPL output",
+        "type": "checkbox"
+      },
+      "zeppelin.spark.maxResult": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.maxResult",
+        "defaultValue": "1000",
+        "description": "Max number of Spark SQL result to display.",
+        "type": "number"
+      },
+      "zeppelin.spark.enableSupportedVersionCheck": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.enableSupportedVersionCheck",
+        "defaultValue": true,
+        "description": "Whether checking supported spark version. Developer only setting, not for production use",
+        "type": "checkbox"
+      },
+      "zeppelin.spark.uiWebUrl": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.uiWebUrl",
+        "defaultValue": "",
+        "description": "Override Spark UI default URL. In Kubernetes mode, value can be Jinja template string with 3 template variables 'PORT', 'SERVICE_NAME' and 'SERVICE_DOMAIN'. (ex: http://{{PORT}}-{{SERVICE_NAME}}.{{SERVICE_DOMAIN}})",
+        "type": "string"
+      },
+      "zeppelin.spark.ui.hidden": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.ui.hidden",
+        "defaultValue": false,
+        "description": "Whether hide spark ui in zeppelin ui",
+        "type": "checkbox"
+      },
+      "spark.webui.yarn.useProxy": {
+        "envName": null,
+        "propertyName": "",
+        "defaultValue": false,
+        "description": "whether use yarn proxy url as spark weburl, e.g. http://localhost:8088/proxy/application_1583396598068_0004",
+        "type": "checkbox"
+      },
+      "zeppelin.spark.scala.color": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.scala.color",
+        "defaultValue": true,
+        "description": "Whether enable color output of spark scala interpreter",
+        "type": "checkbox"
+      },
+      "zeppelin.spark.deprecatedMsg.show": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.deprecatedMsg.show",
+        "defaultValue": true,
+        "description": "Whether show the spark deprecated message, spark 2.2 and before are deprecated. Zeppelin will display warning message by default",
+        "type": "checkbox"
+      }
+    },
+    "editor": {
+      "language": "scala",
+      "editOnDblClick": false,
+      "completionKey": "TAB",
+      "completionSupport": true
+    }
+  },
+  {
+    "group": "spark",
+    "name": "sql",
+    "className": "org.apache.zeppelin.spark.SparkSqlInterpreter",
+    "properties": {
+      "zeppelin.spark.concurrentSQL": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.concurrentSQL",
+        "defaultValue": true,
+        "description": "Execute multiple SQL concurrently if set true.",
+        "type": "checkbox"
+      },
+      "zeppelin.spark.concurrentSQL.max": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.concurrentSQL.max",
+        "defaultValue": "10",
+        "description": "Max number of SQL concurrently executed",
+        "type": "number"
+      },
+      "zeppelin.spark.sql.stacktrace": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.sql.stacktrace",
+        "defaultValue": true,
+        "description": "Show full exception stacktrace for SQL queries if set to true.",
+        "type": "checkbox"
+      },
+      "zeppelin.spark.sql.interpolation": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.sql.interpolation",
+        "defaultValue": false,
+        "description": "Enable ZeppelinContext variable interpolation into spark sql",
+        "type": "checkbox"
+      }
+    },
+    "editor": {
+      "language": "sql",
+      "editOnDblClick": false,
+      "completionKey": "TAB",
+      "completionSupport": true
+    }
+  },
+  {
+    "group": "spark",
+    "name": "pyspark",
+    "className": "org.apache.zeppelin.spark.PySparkInterpreter",
+    "properties": {
+      "PYSPARK_PYTHON": {
+        "envName": "PYSPARK_PYTHON",
+        "propertyName": "PYSPARK_PYTHON",
+        "defaultValue": "python",
+        "description": "Python binary executable to use for PySpark in both driver and workers (default is python2.7 if available, otherwise python). Property `spark.pyspark.python` take precedence if it is set",
+        "type": "string"
+      },
+      "PYSPARK_DRIVER_PYTHON": {
+        "envName": "PYSPARK_DRIVER_PYTHON",
+        "propertyName": "PYSPARK_DRIVER_PYTHON",
+        "defaultValue": "python",
+        "description": "Python binary executable to use for PySpark in driver only (default is `PYSPARK_PYTHON`). Property `spark.pyspark.driver.python` take precedence if it is set",
+        "type": "string"
+      },
+      "zeppelin.pyspark.useIPython": {
+        "envName": null,
+        "propertyName": "zeppelin.pyspark.useIPython",
+        "defaultValue": true,
+        "description": "Whether use IPython when it is available",
+        "type": "checkbox"
+      }
+    },
+    "editor": {
+      "language": "python",
+      "editOnDblClick": false,
+      "completionKey": "TAB",
+      "completionSupport": true
+    }
+  },
+  {
+    "group": "spark",
+    "name": "ipyspark",
+    "className": "org.apache.zeppelin.spark.IPySparkInterpreter",
+    "properties": {},
+    "editor": {
+      "language": "python",
+      "editOnDblClick": false,
+      "completionSupport": true,
+      "completionKey": "TAB"
+    }
+  },
+  {
+    "group": "spark",
+    "name": "r",
+    "className": "org.apache.zeppelin.spark.SparkRInterpreter",
+    "properties": {
+      "zeppelin.R.knitr": {
+        "envName": null,
+        "propertyName": "zeppelin.R.knitr",
+        "defaultValue": true,
+        "description": "Whether use knitr or not",
+        "type": "checkbox"
+      },
+      "zeppelin.R.cmd": {
+        "envName": null,
+        "propertyName": "zeppelin.R.cmd",
+        "defaultValue": "R",
+        "description": "R binary executable path",
+        "type": "string"
+      },
+      "zeppelin.R.image.width": {
+        "envName": null,
+        "propertyName": "zeppelin.R.image.width",
+        "defaultValue": "100%",
+        "description": "Image width of R plotting",
+        "type": "number"
+      },
+      "zeppelin.R.render.options": {
+        "envName": null,
+        "propertyName": "zeppelin.R.render.options",
+        "defaultValue": "out.format = 'html', comment = NA, echo = FALSE, results = 'asis', message = F, warning = F, fig.retina = 2",
+        "description": "",
+        "type": "textarea"
+      }
+    },
+    "editor": {
+      "language": "r",
+      "editOnDblClick": false,
+      "completionSupport": false,
+      "completionKey": "TAB"
+    }
+  },
+  {
+    "group": "spark",
+    "name": "ir",
+    "className": "org.apache.zeppelin.spark.SparkIRInterpreter",
+    "properties": {},
+    "editor": {
+      "language": "r",
+      "editOnDblClick": false,
+      "completionSupport": true,
+      "completionKey": "TAB"
+    }
+  },
+  {
+    "group": "spark",
+    "name": "shiny",
+    "className": "org.apache.zeppelin.spark.SparkShinyInterpreter",
+    "properties": {},
+    "editor": {
+      "language": "r",
+      "editOnDblClick": false,
+      "completionSupport": true,
+      "completionKey": "TAB"
+    }
+  },
+  {
+    "group": "spark",
+    "name": "kotlin",
+    "className": "org.apache.zeppelin.spark.KotlinSparkInterpreter",
+    "properties": {
+      "zeppelin.spark.printREPLOutput": {
+        "envName": null,
+        "propertyName": "zeppelin.spark.printREPLOutput",
+        "defaultValue": true,
+        "description": "Print REPL output",
+        "type": "checkbox"
+      },
+      "zeppelin.spark.maxResult": {
+        "envName": null,
+        "propertyName": "zeppelin.kotlin.maxResult",
+        "defaultValue": "1000",
+        "description": "Max number of result to display.",
+        "type": "number"
+      },
+      "zeppelin.kotlin.shortenTypes": {
+        "envName": null,
+        "propertyName": "zeppelin.kotlin.shortenTypes",
+        "defaultValue": true,
+        "description": "Show short types instead of full, e.g. List<String> or kotlin.collections.List<kotlin.String>",
+        "type": "checkbox"
+      }
+    },
+    "editor": {
+      "language": "kotlin",
+      "editOnDblClick": false,
+      "completionKey": "TAB",
+      "completionSupport": false
+    }
+  },
+  {
+    "group": "spark",
+    "name": "dpl",
+    "className": "com.teragrep.pth_07.DPLInterpreter",
+    "defaultInterpreter": true,
+    "properties": {
+      "dpl.Streaming.mode": {
+        "envName": "",
+        "propertyName": "dpl.continuous",
+        "defaultValue": true,
+        "description": "Select streaming mode. true=Continuous streaming/ false=Single shot",
+        "type": "checkbox"
+      },
+      "dpl.stacktrace": {
+        "envName": "",
+        "propertyName": "dpl.stacktrace",
+        "defaultValue": true,
+        "description": "Enable full stacktrace",
+        "type": "checkbox"
+      },
+      "dpl.archive.enabled": {
+        "envName": "",
+        "propertyName": "dpl.archive.enabled",
+        "defaultValue": true,
+        "description": "Enable Archive queries",
+        "type": "checkbox"
+      },
+      "dpl.archive.db.username": {
+        "envName": "",
+        "propertyName": "dpl.archive.db.username",
+        "defaultValue": "streamdb_user",
+        "description": "database username for authenticating to streamdb database",
+        "type": "string"
+      },
+      "dpl.archive.db.password": {
+        "envName": "",
+        "propertyName": "dpl.archive.db.password",
+        "defaultValue": "streamdbUserPassw0rd",
+        "description": "database password for authenticating to streamdb database",
+        "type": "string"
+      },
+      "dpl.archive.db.url": {
+        "envName": "",
+        "propertyName": "dpl.archive.db.url",
+        "defaultValue": "jdbc:mariadb://dbhost.domain.tld:3306/streamdb",
+        "description": "URL to streamdb database, including the database name",
+        "type": "string"
+      },
+      "dpl.archive.db.journaldb.name": {
+        "envName": "",
+        "propertyName": "dpl.archive.db.journaldb.name",
+        "defaultValue": "journaldb",
+        "description": "name of the journal schema",
+        "type": "string"
+      },
+      "dpl.archive.db.streamdb.name": {
+        "envName": "",
+        "propertyName": "dpl.archive.db.streamdb.name",
+        "defaultValue": "streamdb",
+        "description": "name of the stream schema",
+        "type": "string"
+      },
+      "dpl.archive.executor.number": {
+        "envName": "",
+        "propertyName": "dpl.archive.executor.number",
+        "defaultValue": "1",
+        "description": "Archive executor node count.",
+        "type": "number"
+      },
+      "dpl.kafka.enabled": {
+        "envName": "",
+        "propertyName": "dpl.kafka.enabled",
+        "defaultValue": true,
+        "description": "Enable Kafka queries",
+        "type": "checkbox"
+      },
+      "dpl.recall-size": {
+        "envName": "",
+        "propertyName": "dpl.recall-size",
+        "defaultValue": "100",
+        "description": "Recall size for limiting results for n-top items. Default is 100",
+        "type": "number"
+      },
+      "dpl.pth_06.enabled": {
+        "defaultValue": "true",
+        "description": "Enable Teragrep Datasource",
+        "envName": "",
+        "propertyName": "dpl.pth_06.enabled",
+        "type": "checkbox"
+      },
+      "dpl.pth_06.partitions": {
+        "defaultValue": "24",
+        "description": "Teragrep Datasource Partition Count (spark.dynamicAllocation.maxExecutors must be higher for decent performance!)",
+        "envName": "",
+        "propertyName": "dpl.pth_06.partitions",
+        "type": "string"
+      },
+      "dpl.pth_06.transition.enabled": {
+        "defaultValue": "true",
+        "description": "Enable Teragrep Datasource transition between Kafka and Archive",
+        "envName": "",
+        "propertyName": "dpl.pth_06.transition.enabled",
+        "type": "checkbox"
+      },
+      "dpl.pth_06.transition.hoursago": {
+        "defaultValue": "2",
+        "description": "Teragrep Datasource transition point hours ago",
+        "envName": "",
+        "propertyName": "dpl.pth_06.transition.hoursago",
+        "type": "number"
+      },
+      "dpl.pth_06.archive.enabled": {
+        "defaultValue": "true",
+        "description": "Enable Teragrep Datasource Archive module",
+        "envName": "",
+        "propertyName": "dpl.pth_06.archive.enabled",
+        "type": "checkbox"
+      },
+      "dpl.pth_06.archive.db.username": {
+        "defaultValue": "streamdb_user",
+        "description": "Teragrep Datasource Archive Database username",
+        "envName": "",
+        "propertyName": "dpl.pth_06.archive.db.username",
+        "type": "string"
+      },
+      "dpl.pth_06.archive.db.password": {
+        "defaultValue": "streamdb_pass",
+        "description": "Teragrep Datasource Archive Database password",
+        "envName": "",
+        "propertyName": "dpl.pth_06.archive.db.password",
+        "type": "string"
+      },
+      "dpl.pth_06.archive.db.url": {
+        "defaultValue": "jdbc:mariadb://mariadb.example.com:3306/streamdb",
+        "description": "Teragrep Datasource Archive Database URL",
+        "envName": "",
+        "propertyName": "dpl.pth_06.archive.db.url",
+        "type": "string"
+      },
+      "dpl.pth_06.archive.db.streamdb.name": {
+        "defaultValue": "streamdb",
+        "description": "Teragrep Datasource Archive Database streamdb schema name",
+        "envName": "",
+        "propertyName": "dpl.pth_06.archive.db.streamdb.name",
+        "type": "string"
+      },
+      "dpl.pth_06.archive.db.journaldb.name": {
+        "defaultValue": "journaldb",
+        "description": "Teragrep Datasource Archive Database journaldb schema name",
+        "envName": "",
+        "propertyName": "dpl.pth_06.archive.db.journaldb.name",
+        "type": "string"
+      },
+      "dpl.pth_06.kafka.enabled": {
+        "defaultValue": "true",
+        "description": "Enable Teragrep Datasource Kafka module",
+        "envName": "",
+        "propertyName": "dpl.pth_06.kafka.enabled",
+        "type": "checkbox"
+      },
+      "dpl.pth_06.kafka.bootstrap.servers": {
+        "defaultValue": "node3.example.com:9094,node4.example.com:9094,node5.example.com:9094",
+        "description": "Teragrep Datasource Kafka bootstrap servers",
+        "envName": "",
+        "propertyName": "dpl.pth_06.kafka.bootstrap.servers",
+        "type": "string"
+      },
+      "dpl.pth_06.kafka.sasl.mechanism": {
+        "defaultValue": "PLAIN",
+        "description": "Teragrep Datasource Kafka SASL mechanism",
+        "envName": "",
+        "propertyName": "dpl.pth_06.kafka.sasl.mechanism",
+        "type": "string"
+      },
+      "dpl.pth_06.kafka.security.protocol": {
+        "defaultValue": "SASL_PLAINTEXT",
+        "description": "Teragrep Datasource Kafka security protocol",
+        "envName": "",
+        "propertyName": "dpl.pth_06.kafka.security.protocol",
+        "type": "string"
+      },
+      "dpl.pth_06.kafka.max.poll.records": {
+        "defaultValue": "64000",
+        "description": "Teragrep Datasource Kafka executor max records per poll",
+        "envName": "",
+        "propertyName": "dpl.pth_06.kafka.max.poll.records",
+        "type": "string"
+      },
+      "dpl.pth_06.kafka.fetch.max.bytes": {
+        "defaultValue": "52428800",
+        "description": "Teragrep Datasource Kafka executor fetch max bytes",
+        "envName": "",
+        "propertyName": "dpl.pth_06.kafka.fetch.max.bytes",
+        "type": "string"
+      },
+      "dpl.pth_06.kafka.fetch.max.wait.ms": {
+        "defaultValue": "120000",
+        "description": "Teragrep Datasource Kafka executor fetch max wait",
+        "envName": "",
+        "propertyName": "dpl.pth_06.kafka.fetch.max.wait.ms",
+        "type": "string"
+      },
+      "dpl.pth_06.kafka.max.partition.fetch.bytes": {
+        "defaultValue": "1048576",
+        "description": "Teragrep Datasource Kafka executor partition fetch bytes",
+        "envName": "",
+        "propertyName": "dpl.pth_06.kafka.max.partition.fetch.bytes",
+        "type": "string"
+      },
+      "dpl.pth_06.kafka.continuousProcessing": {
+        "defaultValue": "false",
+        "description": "Enable Teragrep Datasource Kafka continuousProcessing (experimental)",
+        "envName": "",
+        "propertyName": "dpl.pth_06.kafka.continuousProcessing",
+        "type": "checkbox"
+      },
+      "dpl.source.kafka-bootstrap-servers": {
+        "envName": "",
+        "propertyName": "dpl.source-kafka-bootstrap-servers",
+        "defaultValue": "localhost:700, localhost:7001, localhost:7002",
+        "description": "Source kafka servers",
+        "type": "string"
+      },
+      "dpl.source.kafka.sasl.mechanism": {
+        "envName": "",
+        "propertyName": "dpl.souce.kafka.sasl.mechanism",
+        "defaultValue": "PLAIN",
+        "description": "Source kafka sasl mechanism, default PLAIN",
+        "type": "string"
+      },
+      "dpl.source.kafka.security.protocol": {
+        "envName": "",
+        "propertyName": "dpl.source.kafkasecurity.protocol",
+        "defaultValue": "SASL_PLAINTEXT",
+        "description": "Source kafka security protocol",
+        "type": "string"
+      },
+      "dpl.verbose": {
+        "envName": "",
+        "propertyName": "dpl.verbose",
+        "defaultValue": true,
+        "description": "Set returned data fields. False returns only _raw and timestamp. True returns all parsed fields.",
+        "type": "checkbox"
+      },
+      "fs.s3a.impl": {
+        "envName": "",
+        "propertyName": "fs.s3a.impl",
+        "defaultValue": "org.apache.hadoop.fs.s3a.S3AFileSystem",
+        "description": "S3 connector implementation",
+        "type": "string"
+      },
+      "fs.s3a.endpoint": {
+        "envName": "",
+        "propertyName": "fs.s3a.endpoint",
+        "defaultValue": "s3proxy-nodeport.default.svc.cluster.local:9000",
+        "description": "S3 endpoint",
+        "type": "string"
+      },
+      "fs.s3a.connection.ssl.enabled": {
+        "envName": "",
+        "propertyName": "fs.s3a.connection.ssl.enabled",
+        "defaultValue": true,
+        "description": "ssh enabled for S3",
+        "type": "checkbox"
+      },
+      "fs.s3a.aws.credentials.provider": {
+        "envName": "",
+        "propertyName": "fs.s3a.aws.credentials.provider",
+        "defaultValue": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
+        "description": "S3 credentiald provider",
+        "type": "string"
+      },
+      "fs.s3a.access.key": {
+        "envName": "",
+        "propertyName": "fs.s3a.access.key",
+        "defaultValue": "AKIAIOSFODNN7EXAMPLE",
+        "description": "S3 access key",
+        "type": "string"
+      },
+      "fs.s3a.secret.key": {
+        "envName": "",
+        "propertyName": "fs.s3a.impl",
+        "defaultValue": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "description": "S3 secret key",
+        "type": "string"
+      },
+      "dpl.ignoreParserFailures": {
+        "envName": "",
+        "propertyName": "dpl.ignoreParserFailures",
+        "defaultValue": false,
+        "description": "Should parser failures be ignored",
+        "type": "checkbox"
+      },
+      "dpl.smtp.server": {
+        "envName": "",
+        "propertyName": "dpl.smtp.server",
+        "defaultValue": "localhost:25",
+        "description": "Email server address",
+        "type": "string"
+      },
+      "dpl.smtp.username": {
+        "envName": "",
+        "propertyName": "dpl.smtp.username",
+        "defaultValue": "username",
+        "description": "Email server username. Value is ignored if server allows anonymous logins",
+        "type": "string"
+      },
+      "dpl.smtp.password": {
+        "envName": "",
+        "propertyName": "dpl.smtp.password",
+        "defaultValue": "password",
+        "description": "Email server password. Value is ignored if server allows anonymous logins",
+        "type": "string"
+      },
+      "dpl.smtp.encryption": {
+        "envName": "",
+        "propertyName": "dpl.smtp.encryption",
+        "defaultValue": "PLAIN",
+        "description": "Encryption mode. Possible values are PLAIN, SSL or TLS. Other values will result in an exception.",
+        "type": "string"
+      },
+      "dpl.kafka.maxOffsetsPerTrigger": {
+        "defaultValue": 200000,
+        "description": "Batch size Kafka queries. Default is 200000.",
+        "envName": "",
+        "propertyName": "dpl.kafka.maxOffsetsPerTrigger",
+        "type": "number"
+      },
+      "dpl.web.url": {
+        "defaultValue": "http://localhost:8080",
+        "description": "Web url for this Teragrep instance",
+        "envName": "",
+        "propertyName": "dpl.web.url",
+        "type": "string"
+      },
+      "dpl.pth_10.transform.sendemail.restrictedMode": {
+        "defaultValue": true,
+        "description": "Limit functional parameters of sendemail command to 'to' and 'subject'",
+        "envName": "",
+        "propertyName": "dpl.pth_10.transform.sendemail.restrictedMode",
+        "type": "checkbox"
+      },
+      "dpl.smtp.debug": {
+        "defaultValue": false,
+        "description": "Enable SMTP debugging, defaults to false",
+        "envName": "",
+        "propertyName": "dpl.smtp.debug",
+        "type": "checkbox"
+      },
+      "dpl.pth_10.transform.sendemail.parameter.from": {
+        "defaultValue": "teragrep@localhost.localdomain",
+        "description": "From address for sendemail command",
+        "envName": "",
+        "propertyName": "dpl.pth_10.transform.sendemail.parameter.from",
+        "type": "string"
+      },
+      "dpl.pth_07.checkCompletion": {
+        "defaultValue": true,
+        "description": "Toggle DPL query completion, defaults to true",
+        "envName": "",
+        "propertyName": "dpl.pth_07.checkCompletion",
+        "type": "checkbox"
+      },
+      "dpl.pth_10.transform.teragrep.kafka.save.bootstrap.servers": {
+        "defaultValue": "node3.example.com:9094,node4.example.com:9094,node5.example.com:9094",
+        "description": "Kafka bootstrap servers for teragrep kafka save command as comma-delimited list",
+        "envName": "",
+        "propertyName": "dpl.pth_10.transform.teragrep.kafka.save.bootstrap.servers",
+        "type": "string"
+      },
+      "dpl.pth_10.transform.teragrep.kafka.save.sasl.mechanism": {
+        "defaultValue": "PLAIN",
+        "description": "Sasl mechanism for teragrep kafka save command",
+        "envName": "",
+        "propertyName": "dpl.pth_10.transform.teragrep.kafka.save.sasl.mechanism",
+        "type": "string"
+      },
+      "dpl.pth_10.transform.teragrep.kafka.save.security.protocol": {
+        "defaultValue": "SASL_PLAINTEXT",
+        "description": "Security protocol for teragrep kafka save command",
+        "envName": "",
+        "propertyName": "dpl.pth_10.transform.teragrep.kafka.save.security.protocol",
+        "type": "string"
+      },
+      "dpl.pth_06.archive.db.hideDatabaseExceptions": {
+        "defaultValue": "false",
+        "description": "Hide database exceptions arising from incorrect data",
+        "envName": "",
+        "propertyName": "dpl.pth_06.archive.db.hideDatabaseExceptions",
+        "type": "checkbox"
+      },
+      "dpl.pth_06.archive.s3.skipNonRFC5424Files": {
+        "defaultValue": "false",
+        "description": "Skip non-rfc5424 files which for parse fails ",
+        "envName": "",
+        "propertyName": "dpl.pth_06.archive.s3.skipNonRFC5424Files",
+        "type": "checkbox"
+      },
+      "dpl.pth_10.transform.iplocation.db.path": {
+        "defaultValue": "/usr/share/GeoIP/GeoLite2-City.mmdb",
+        "description": "MaxMind DB file path used for the iplocation dpl command. Can be of GeoIP2 or rir-data db type.",
+        "envName": "",
+        "propertyName": "dpl.pth_10.transform.iplocation.db.path",
+        "type": "string"
+      }
+    },
+    "editor": {
+      "language": "dpl",
+      "editOnDblClick": false,
+      "completionKey": "TAB",
+      "completionSupport": true
+    }
+  }
+]
