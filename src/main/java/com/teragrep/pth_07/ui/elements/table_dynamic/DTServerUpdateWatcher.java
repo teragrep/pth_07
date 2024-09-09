@@ -59,7 +59,9 @@ public class DTServerUpdateWatcher extends AngularObjectWatcher {
 
     @Override
     public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
-        LOGGER.trace("DTServerUpdate <- " + o.toString());
-        LOGGER.trace("DTServerUpdate -> " + o1.toString());
+        if(LOGGER.isTraceEnabled()) {
+            LOGGER.trace("DTServerUpdate <- {}", o.toString());
+            LOGGER.trace("DTServerUpdate -> {}", o1.toString());
+        }
     }
 }

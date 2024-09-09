@@ -59,9 +59,10 @@ public class AJAXResponseWatcher extends AngularObjectWatcher {
 
     @Override
     public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
-        LOGGER.trace("AJAXResponse <- " + o.toString());
-        LOGGER.trace("AJAXResponse -> " + o1.toString());
+        if(LOGGER.isTraceEnabled()) {
+            LOGGER.trace("AJAXResponse <- {}", o.toString());
+            LOGGER.trace("AJAXResponse -> {}", o1.toString());
+        }
         // not updating local variables as push only
-
     }
 }

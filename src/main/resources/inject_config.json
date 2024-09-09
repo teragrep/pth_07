@@ -143,6 +143,55 @@
       "propertyName": "dpl.pth_06.archive.s3.skipNonRFC5424Files",
       "type": "checkbox"
     },
+    "dpl.pth_06.archive.scheduler": {
+      "defaultValue": "BatchScheduler",
+      "description": "Select the type of scheduler Archive datasource uses (BatchScheduler or NoOpScheduler)",
+      "envName": "",
+      "propertyName": "dpl.pth_06.archive.scheduler",
+      "type": "string"
+    },
+    "dpl.pth_06.bloom.db.fields": {
+      "defaultValue": "[{expected: 100000, fpp: 0.01},{expected: 1000000, fpp: 0.03},{expected: 2500000, fpp: 0.05}]",
+      "description": "Configure number of filter fields and expected num of items and fpp ",
+      "envName": "",
+      "propertyName": "dpl.pth_06.bloom.db.fields",
+      "type": "string"
+    },
+    "dpl.pth_06.bloom.enabled": {
+      "defaultValue": "false",
+      "description": "Use bloomfilter for matching files ",
+      "envName": "",
+      "propertyName": "dpl.pth_06.bloom.enabled",
+      "type": "checkbox"
+    },
+    "dpl.pth_06.bloom.withoutFilter": {
+      "defaultValue": "false",
+      "description": "Return files that do not have a bloomfilter ",
+      "envName": "",
+      "propertyName": "dpl.pth_06.bloom.withoutFilter",
+      "type": "checkbox"
+    },
+    "dpl.pth_06.batch.size.fileCompressionRatio": {
+      "defaultValue": 15.5,
+      "description": "Used to limit the batch size. Estimate file compression ratio for Archive.",
+      "envName": "",
+      "propertyName": "dpl.pth_06.batch.size.fileCompressionRatio",
+      "type": "number"
+    },
+    "dpl.pth_06.batch.size.processingSpeed": {
+      "defaultValue": 136.5,
+      "description": "Used to limit the batch size. Estimate processing speed for Archive.",
+      "envName": "",
+      "propertyName": "dpl.pth_06.batch.size.processingSpeed",
+      "type": "number"
+    },
+    "dpl.pth_06.batch.size.totalObjectCountLimit": {
+      "defaultValue": 1000,
+      "description": "Used to limit the batch size. Maximum count of objects in a batch.",
+      "envName": "",
+      "propertyName": "dpl.pth_06.batch.size.totalObjectCountLimit",
+      "type": "number"
+    },
     "dpl.pth_06.enabled": {
       "defaultValue": "true",
       "description": "Enable Teragrep Datasource",
@@ -240,6 +289,20 @@
       "envName": "",
       "propertyName": "dpl.pth_07.checkCompletion",
       "type": "checkbox"
+    },
+    "dpl.pth_07.query.timeout": {
+      "defaultValue": -1,
+      "description": "Terminate query after a timeout in milliseconds",
+      "envName": "",
+      "propertyName": "dpl.pth_07.query.timeout",
+      "type": "number"
+    },
+    "dpl.pth_07.trigger.processingTime": {
+      "defaultValue": 0,
+      "description": "A trigger policy that runs a query progresses query with a specified wait time between batches. Default is 0.",
+      "envName": "",
+      "propertyName": "dpl.pth_07.trigger.processingTime",
+      "type": "number"
     },
     "dpl.pth_10.transform.iplocation.db.path": {
       "defaultValue": "/usr/share/GeoIP/GeoLite2-City.mmdb",

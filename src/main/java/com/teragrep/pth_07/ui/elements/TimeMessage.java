@@ -61,8 +61,10 @@ public class TimeMessage extends AbstractUserInterfaceElement {
         AngularObjectWatcher angularObjectWatcher = new AngularObjectWatcher(getInterpreterContext()) {
             @Override
             public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
-                        LOGGER.trace("timeMsg <- " + o.toString());
-                        LOGGER.trace("timeMsg -> " + o1.toString());
+                if(LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("timeMsg <- {}", o.toString());
+                    LOGGER.trace("timeMsg -> {}", o1.toString());
+                }
             }
         };
 
