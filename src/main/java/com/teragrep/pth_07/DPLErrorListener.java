@@ -43,48 +43,35 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.stream;
 
-import com.teragrep.pth_06.ArchiveMicroStreamReader;
-import com.typesafe.config.Config;
-import org.apache.logging.log4j.spi.LoggerContextFactory;
-import org.apache.spark.sql.streaming.StreamingQuery;
+package com.teragrep.pth_07;
+
+import com.teragrep.pth_03.shaded.org.antlr.v4.runtime.BaseErrorListener;
+import com.teragrep.pth_03.shaded.org.antlr.v4.runtime.RecognitionException;
+import com.teragrep.pth_03.shaded.org.antlr.v4.runtime.Recognizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class SourceStatus {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SourceStatus.class);
+/**
+ * Used to listen for errors in DPL queries. Overrides empty functions from BaseErrorListener.
+ */
+public class DPLErrorListener extends BaseErrorListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DPLErrorListener.class);
 
-    public static boolean isQueryDone(Config config, StreamingQuery outQ) {
-        if (config.getBoolean("dpl.pth_06.archive.enabled") || config.getBoolean("dpl.pth_06.kafka.enabled")) {
-            boolean queryDone = true;
-            for (int i = 0; i < outQ.lastProgress().sources().length; i++) {
-                String startOffset = outQ.lastProgress().sources()[i].startOffset();
-                String endOffset = outQ.lastProgress().sources()[i].endOffset();
-                String description = outQ.lastProgress().sources()[i].description();
+    private final String listenedTo;
 
-                if (description != null && !description.startsWith(ArchiveMicroStreamReader.class.getName().concat("@"))) {
-                    LOGGER.debug("Ignoring description: {}", description);
-                    // ignore others than archive
-                    continue;
-                }
+    public DPLErrorListener(String listenedTo) {
+        this.listenedTo = listenedTo;
+    }
 
-                if (startOffset != null) {
-                    if (!startOffset.equalsIgnoreCase(endOffset)) {
-                        LOGGER.debug("Startoffset equals endoffset, setting queryDone to false");
-                        queryDone = false;
-                    }
-                } else {
-                    LOGGER.debug("Startoffset was null, setting queryDone to false");
-                    queryDone = false;
-                }
-            }
-            LOGGER.debug("Returning queryDone: {}", queryDone);
-            return queryDone;
+    @Override
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+        if (e == null) {
+            LOGGER.error("Got an exception from <{}>, no message", listenedTo);
+        } else {
+            LOGGER.error("Got an exception from <{}>: <[{}]>", listenedTo, e.getMessage(), e);
         }
-        else {
-            LOGGER.debug("Returning true as kafka/archive are not enabled");
-            return true;
-        }
+        throw new IllegalStateException(listenedTo + " failure on line " + line + ", column " + charPositionInLine + " due to " + msg +"\n" +
+                "Please check that the query is written correctly. Otherwise, please report this error and include the query used and this error.");
     }
 }

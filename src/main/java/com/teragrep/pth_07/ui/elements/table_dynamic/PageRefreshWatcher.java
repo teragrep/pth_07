@@ -68,8 +68,10 @@ public class PageRefreshWatcher extends AngularObjectWatcher {
     public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
         assert(dtTableDatasetNg != null);
 
-        LOGGER.trace("pageRefresh <- " + o.toString());
-        LOGGER.trace("pageRefresh -> " + o1.toString());
+        if(LOGGER.isTraceEnabled()) {
+            LOGGER.trace("pageRefresh <- {}", o.toString());
+            LOGGER.trace("pageRefresh -> {}", o1.toString());
+        }
         if ((Boolean) o1) {
             dtTableDatasetNg.refreshPage();
         }

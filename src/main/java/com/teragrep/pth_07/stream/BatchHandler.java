@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.stream;
 
+import com.teragrep.pth10.ast.DPLParserCatalystVisitor;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -59,7 +60,7 @@ public class BatchHandler implements Consumer<Dataset<Row>> {
 
     private final UserInterfaceManager userInterfaceManager;
     private final ZeppelinContext zeppelinContext;
-    private boolean aggregatesUsed = false;
+    private DPLParserCatalystVisitor catalystVisitor = null;
 
     public BatchHandler(UserInterfaceManager userInterfaceManager, ZeppelinContext zeppelinContext) {
         this.userInterfaceManager = userInterfaceManager;
@@ -69,18 +70,20 @@ public class BatchHandler implements Consumer<Dataset<Row>> {
     @Override
     public void accept(Dataset<Row> rowDataset) {
         LOGGER.error("BatchHandler accept called LOGGER");
-        if (aggregatesUsed) {
+        if (catalystVisitor != null && catalystVisitor.getAggregatesUsed()) {
+            // need to check aggregatesUsed from visitor at this point, since it can be updated in sequential mode
+            // after the parallel operations are performed
+            
             // use legacy table
             userInterfaceManager.getOutputContent().setOutputContent(zeppelinContext.showData(rowDataset));
-
         }
         else {
             // use DTTableNg
             userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
         }
     }
-
-    public void setAggregatesUsed(boolean aggregatesUsed) {
-        this.aggregatesUsed = aggregatesUsed;
+    
+    public void setCatalystVisitor(DPLParserCatalystVisitor catVisitor) {
+        this.catalystVisitor = catVisitor;
     }
 }

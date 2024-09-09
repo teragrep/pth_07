@@ -61,7 +61,7 @@ public class DPLKryo {
      */
 
     public DPLKryo() {
-        LOGGER.info("Use 'spark.kryo.registrator', '"+ DPLKryoRegistrator.class.getName() +"'");
+        LOGGER.info("Use 'spark.kryo.registrator', '{}'", DPLKryoRegistrator.class.getName());
     }
 
     public static class DPLKryoRegistrator implements KryoRegistrator {

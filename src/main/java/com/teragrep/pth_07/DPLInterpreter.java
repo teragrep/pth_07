@@ -1,47 +1,18 @@
 /*
- * Teragrep DPL Spark Integration PTH-07
- * Copyright (C) 2022  Suomen Kanuuna Oy
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://github.com/teragrep/teragrep/blob/main/LICENSE>.
- *
- *
- * Additional permission under GNU Affero General Public License version 3
- * section 7
- *
- * If you modify this Program, or any covered work, by linking or combining it
- * with other code, such other code is not for that reason alone subject to any
- * of the requirements of the GNU Affero GPL version 3 as long as this Program
- * is the same Program as licensed from Suomen Kanuuna Oy without any additional
- * modifications.
- *
- * Supplemented terms under GNU Affero General Public License version 3
- * section 7
- *
- * Origin of the software must be attributed to Suomen Kanuuna Oy. Any modified
- * versions must be marked as "Modified version of" The Program.
- *
- * Names of the licensors and authors may not be used for publicity purposes.
- *
- * No rights are granted for use of trade names, trademarks, or service marks
- * which are in The Program if any.
- *
- * Licensee must indemnify licensors and authors for any liability that these
- * contractual assumptions impose on licensors and authors.
- *
- * To the extent this program is licensed as part of the Commercial versions of
- * Teragrep, the applicable Commercial License may apply to this file if you as
- * a licensee so wish it.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.teragrep.pth_07;
@@ -64,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -91,31 +63,41 @@ public class DPLInterpreter extends AbstractInterpreter {
         config = ConfigFactory.parseProperties(properties);
         dplExecutor = new DPLExecutor(config);
         dplKryo = new DPLKryo();
-        LOGGER.info("DPL-interpreter initialize properties:" + properties);
+        LOGGER.info("DPL-interpreter initialize properties: {}", properties);
         notebookParagraphUserInterfaceManager = new HashMap<>();
     }
 
     @Override
     public void open() throws InterpreterException {
-        LOGGER.info("DPL-interpreter Open():" + properties);
+        LOGGER.info("DPL-interpreter Open(): {}", properties);
 
         sparkInterpreter = getInterpreterInTheSameSessionByClassName(SparkInterpreter.class, true);
         sparkContext = sparkInterpreter.getSparkContext();
 
         // increase open counter
         SESSION_NUM.incrementAndGet();
-
+        LOGGER.debug("Current session count after opening: {}", SESSION_NUM);
 
     }
 
     @Override
     public void close() throws InterpreterException {
-        LOGGER.info("Close DPLInterpreter");
+        LOGGER.info("Close DPLInterpreter called");
+        LOGGER.debug("Current session count before closing: {}", SESSION_NUM);
         SESSION_NUM.decrementAndGet();
-
+        if (dplExecutor != null) {
+            LOGGER.info("Closing dplExecutor");
+            try {
+                dplExecutor.stop();
+            } catch (TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+        }
         if (sparkInterpreter != null) {
+            LOGGER.info("Closing sparkInterpreter");
             sparkInterpreter.close();
         }
+        LOGGER.debug("Current session count after closing: {}", SESSION_NUM);
     }
 
     @Override
@@ -156,7 +138,7 @@ public class DPLInterpreter extends AbstractInterpreter {
         final String jobDesc = Utils.buildJobDesc(interpreterContext);
         sparkContext.setJobGroup(jobGroup, jobDesc, false);
 
-        LOGGER.info("DPL-interpreter jobGroup=" + jobGroup + "-" + jobDesc);
+        LOGGER.info("DPL-interpreter jobGroup={}-{}", jobGroup, jobDesc);
         sparkContext.setLocalProperty("spark.scheduler.pool", interpreterContext.getLocalProperties().get("pool"));
 
         if (sparkInterpreter.isUnsupportedSparkVersion()) {
@@ -164,7 +146,7 @@ public class DPLInterpreter extends AbstractInterpreter {
                     "Spark " + sparkInterpreter.getSparkVersion().toString() + " is not supported");
         }
 
-        LOGGER.info("DPL-interpreter interpret incoming string:" + lines);
+        LOGGER.info("DPL-interpreter interpret incoming string: {}", lines);
 
         if(lines == null || lines.isEmpty() || lines.trim().isEmpty() ){
             return new InterpreterResult(Code.SUCCESS);
@@ -178,14 +160,20 @@ public class DPLInterpreter extends AbstractInterpreter {
         }
 
         // execute query
-        final InterpreterResult output = dplExecutor.interpret(
-                userInterfaceManager,
-                (SparkSession) sparkInterpreter.getSparkSession(),
-                batchHandler,
-                interpreterContext.getNoteId(),
-                interpreterContext.getParagraphId(),
-                lines
-        );
+        final InterpreterResult output;
+        try {
+            output = dplExecutor.interpret(
+                    userInterfaceManager,
+                    (SparkSession) sparkInterpreter.getSparkSession(),
+                    batchHandler,
+                    interpreterContext.getNoteId(),
+                    interpreterContext.getParagraphId(),
+                    lines
+            );
+            LOGGER.info("Query done, return code: {}", output.code());
+        } catch (TimeoutException e) {
+            throw new RuntimeException(e);
+        }
 
         if (!sparkInterpreter.isScala212()) {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
@@ -201,13 +189,19 @@ public class DPLInterpreter extends AbstractInterpreter {
 
     @Override
     public void cancel(InterpreterContext context) throws InterpreterException {
-        LOGGER.info("CANCEL job id:" + Utils.buildJobGroupId(context));
+        LOGGER.info("CANCEL job id: {}", Utils.buildJobGroupId(context));
+        LOGGER.debug("Current session count before canceling: {}", SESSION_NUM);
         // Stop streaming after current batch
         if (dplExecutor != null) {
-            dplExecutor.stop();
+            try {
+                dplExecutor.stop();
+            } catch (TimeoutException e) {
+                throw new RuntimeException(e);
+            }
         }
         sparkContext.cancelJobGroup(Utils.buildJobGroupId(context));
         sparkInterpreter.cancel(context);
+        LOGGER.debug("Current session count after canceling: {}", SESSION_NUM);
     }
 
 

@@ -57,8 +57,10 @@ public class TimeSet extends AbstractUserInterfaceElement {
         AngularObjectWatcher angularObjectWatcher = new AngularObjectWatcher(getInterpreterContext()) {
             @Override
             public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
-                LOGGER.trace("TimeSet <- " + o.toString());
-                LOGGER.trace("TimeSet -> " + o1.toString());
+                if(LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("TimeSet <- {}", o.toString());
+                    LOGGER.trace("TimeSet -> {}", o1.toString());
+                }
             }
         };
 

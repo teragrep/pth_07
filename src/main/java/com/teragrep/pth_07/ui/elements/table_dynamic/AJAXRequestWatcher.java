@@ -74,8 +74,10 @@ public class AJAXRequestWatcher extends AngularObjectWatcher {
     public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
         assert(dtTableDatasetNg != null);
 
-        LOGGER.trace("AJAXRequest <- " + o.toString());
-        LOGGER.trace("AJAXRequest -> " + o1.toString());
+        if(LOGGER.isTraceEnabled()) {
+            LOGGER.trace("AJAXRequest <- {}", o.toString());
+            LOGGER.trace("AJAXRequest -> {}", o1.toString());
+        }
 
         AJAXRequest ajaxRequest = gson.fromJson((String) o1, AJAXRequest.class);
 

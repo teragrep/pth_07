@@ -60,8 +60,10 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
         AngularObjectWatcher angularObjectWatcher = new AngularObjectWatcher(getInterpreterContext()) {
             @Override
             public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
-                LOGGER.trace("batchMsg <- " + o.toString());
-                LOGGER.trace("batchMsg -> " + o1.toString());
+                if(LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("batchMsg <- {}", o.toString());
+                    LOGGER.trace("batchMsg -> {}", o1.toString());
+                }
             }
         };
 
