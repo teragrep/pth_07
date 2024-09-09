@@ -43,48 +43,26 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.stream;
 
-import com.teragrep.pth_06.ArchiveMicroStreamReader;
-import com.typesafe.config.Config;
-import org.apache.logging.log4j.spi.LoggerContextFactory;
-import org.apache.spark.sql.streaming.StreamingQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-public final class SourceStatus {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SourceStatus.class);
+import com.teragrep.pth_03.antlr.DPLLexer;
+import com.teragrep.pth_03.antlr.DPLParser;
+import com.teragrep.pth_03.shaded.org.antlr.v4.runtime.CharStreams;
+import com.teragrep.pth_03.shaded.org.antlr.v4.runtime.CommonTokenStream;
+import com.teragrep.pth_07.DPLErrorListener;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-    public static boolean isQueryDone(Config config, StreamingQuery outQ) {
-        if (config.getBoolean("dpl.pth_06.archive.enabled") || config.getBoolean("dpl.pth_06.kafka.enabled")) {
-            boolean queryDone = true;
-            for (int i = 0; i < outQ.lastProgress().sources().length; i++) {
-                String startOffset = outQ.lastProgress().sources()[i].startOffset();
-                String endOffset = outQ.lastProgress().sources()[i].endOffset();
-                String description = outQ.lastProgress().sources()[i].description();
+public class DPLErrorListenerTest {
 
-                if (description != null && !description.startsWith(ArchiveMicroStreamReader.class.getName().concat("@"))) {
-                    LOGGER.debug("Ignoring description: {}", description);
-                    // ignore others than archive
-                    continue;
-                }
+    @Test
+    public void invalidQueryTest() { // should throw IllegalStateException, no NPEs
+        DPLLexer lexer = new DPLLexer(CharStreams.fromString("| eval a=eval bc]"));
+        DPLParser parser = new DPLParser(new CommonTokenStream(lexer));
+        parser.addErrorListener(new DPLErrorListener("Parser"));
 
-                if (startOffset != null) {
-                    if (!startOffset.equalsIgnoreCase(endOffset)) {
-                        LOGGER.debug("Startoffset equals endoffset, setting queryDone to false");
-                        queryDone = false;
-                    }
-                } else {
-                    LOGGER.debug("Startoffset was null, setting queryDone to false");
-                    queryDone = false;
-                }
-            }
-            LOGGER.debug("Returning queryDone: {}", queryDone);
-            return queryDone;
-        }
-        else {
-            LOGGER.debug("Returning true as kafka/archive are not enabled");
-            return true;
-        }
+        IllegalStateException e = Assertions.assertThrowsExactly(IllegalStateException.class, parser::root);
+        Assertions.assertTrue(e.getMessage().contains("Parser failure"));
     }
 }

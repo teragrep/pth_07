@@ -59,7 +59,9 @@ public class DTAnchorWatcher extends AngularObjectWatcher {
 
     @Override
     public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
-        LOGGER.trace("DTAnchorReady <- " + o.toString());
-        LOGGER.trace("DTAnchorReady -> " + o1.toString());
+        if(LOGGER.isTraceEnabled()) {
+            LOGGER.trace("DTAnchorReady <- {}", o.toString());
+            LOGGER.trace("DTAnchorReady -> {}", o1.toString());
+        }
     }
 }

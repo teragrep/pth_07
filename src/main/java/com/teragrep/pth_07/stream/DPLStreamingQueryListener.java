@@ -53,6 +53,8 @@ import org.apache.spark.sql.streaming.StreamingQueryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeoutException;
+
 public class DPLStreamingQueryListener extends StreamingQueryListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(DPLStreamingQueryListener.class);
 
@@ -62,7 +64,6 @@ public class DPLStreamingQueryListener extends StreamingQueryListener {
     private final UserInterfaceManager userInterfaceManager;
     private final DPLParserCatalystContext catalystContext;
 
-    private long lastBatchId = -1;
 
     public DPLStreamingQueryListener(StreamingQuery streamingQuery, Config config, UserInterfaceManager userInterfaceManager, DPLParserCatalystContext catalystContext) {
         this.queryName = streamingQuery.name();
@@ -74,58 +75,69 @@ public class DPLStreamingQueryListener extends StreamingQueryListener {
 
     @Override
     public void onQueryStarted(QueryStartedEvent queryStarted) {
-        LOGGER.info("Query started: " + queryStarted.id());
+        LOGGER.info("Query started: {}", queryStarted.id());
     }
     @Override
     public void onQueryTerminated(QueryTerminatedEvent queryTerminated) {
-        LOGGER.info("Query terminated: " + queryTerminated.id());
+        LOGGER.info("Query terminated: {}", queryTerminated.id());
         streamingQuery.sparkSession().streams().removeListener(this);
     }
     @Override
     public void onQueryProgress(QueryProgressEvent queryProgress) {
+        LOGGER.debug("onQueryProgress() called");
         String nameOfStream = queryProgress.progress().name();
+        LOGGER.debug("Name of stream: {}", nameOfStream);
+        LOGGER.debug("Query name: {}", nameOfStream);
 
         if (queryName.equals(nameOfStream)) {
+            LOGGER.debug("Name of stream equals query name");
             // update performance data
+            LOGGER.debug("Updating performance data");
             userInterfaceManager.getPerformanceIndicator().setPerformanceData(
                     queryProgress.progress().numInputRows(),
                     queryProgress.progress().batchId(),
                     queryProgress.progress().processedRowsPerSecond()
             );
 
+            LOGGER.debug("Checking for completion");
             if (checkCompletion(streamingQuery)) {
+                LOGGER.debug("Flushing context");
                 // a flush call for post query actions to finish
                 catalystContext.flush();
-                streamingQuery.stop();
+                try {
+                    LOGGER.info("Stopping streaming query");
+                    streamingQuery.stop();
+                } catch (TimeoutException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
 
     private boolean checkCompletion(StreamingQuery streamingQuery) {
-
+        LOGGER.debug("Checking for checkCompletion");
         if (!config.getBoolean("dpl.pth_07.checkCompletion")) {
+            LOGGER.debug("CheckCompletion was not enabled");
             return false;
         }
 
+        LOGGER.debug("Checking last progress || initializing sources");
         if (
                 streamingQuery.lastProgress() == null ||
                         streamingQuery.status().message().equals("Initializing sources")
         ) {
             // query has not started
+            LOGGER.debug("Query has not started");
             return false;
         }
 
         boolean shouldStop = false;
-
-        if (streamingQuery.lastProgress().batchId() != lastBatchId) {
-            // only check once for each batch
-
-            if (streamingQuery.lastProgress().sources().length != 0) {
-                // sources have started
-                shouldStop = SourceStatus.isArchiveDone(config, streamingQuery) && SourceStatus.isKafkaDone(config, streamingQuery);
-            }
+        LOGGER.debug("Checking if sources exist");
+        if (streamingQuery.lastProgress().sources().length != 0) {
+            // sources have started
+            LOGGER.debug("Sources exist, checking if query is done");
+            shouldStop = SourceStatus.isQueryDone(config, streamingQuery);
         }
-        lastBatchId = streamingQuery.lastProgress().batchId();
 
         /*
         if (streamingQuery.status().isTriggerActive()) {
@@ -133,6 +145,7 @@ public class DPLStreamingQueryListener extends StreamingQueryListener {
             shouldStop = false;
         }
          */
+        LOGGER.debug("Returning shouldstop: {}", shouldStop);
         return shouldStop;
     }
 
