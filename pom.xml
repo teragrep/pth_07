@@ -220,7 +220,7 @@
       <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
-        <version>0.15</version>
+        <version>0.16.1</version>
         <inherited>false</inherited>
         <executions>
           <execution>
@@ -232,15 +232,33 @@
         </executions>
         <configuration>
           <addDefaultLicenseMatchers>false</addDefaultLicenseMatchers>
+          <addDefaultLicenses>false</addDefaultLicenses>
+          <families>
+            <family>
+              <id>Teragrep</id>
+              <name>Affero General Public License v3</name>
+            </family>
+            <family>
+              <id>Apache</id>
+              <name>Apache License, Version 2.0</name>
+            </family>
+          </families>
           <licenses>
-            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-              <notes>Also allow the license url to be https.</notes>
-              <patterns>
-                <!-- all others -->
-                <pattern>https://github.com/teragrep/teragrep/blob/main/LICENSE</pattern>
-                <!-- Utils.java -->
-                <pattern>http://www.apache.org/licenses/LICENSE-2.0</pattern>
-              </patterns>
+            <license>
+              <copyright>
+                <owner>Suomen Kanuuna Oy</owner>
+                <start>2024</start>
+              </copyright>
+              <text>Teragrep DPL Spark Integration PTH-07</text>
+              <family>Teragrep</family>
+            </license>
+            <license>
+              <copyright>
+                <owner>Apache Software Foundation</owner>
+                <start>2024</start>
+              </copyright>
+              <text>Licensed to the Apache Software Foundation (ASF)</text>
+              <family>Apache</family>
             </license>
           </licenses>
           <consoleOutput>true</consoleOutput>
