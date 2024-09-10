@@ -63,9 +63,9 @@
     <changelist>-SNAPSHOT</changelist>
     <sha1/>
     <interpreter.name>spark</interpreter.name>
-    <teragrep.pth_10.version>4.10.3</teragrep.pth_10.version>
+    <teragrep.pth_10.version>6.0.0</teragrep.pth_10.version>
     <teragrep.rlo_06.version>4.3.0</teragrep.rlo_06.version>
-    <teragrep.jue_01.version>0.4.3</teragrep.jue_01.version>        
+    <teragrep.jue_01.version>0.4.3</teragrep.jue_01.version>
   </properties>
   <scm>
     <connection>scm:git:https://github.com/teragrep/pth_07.git</connection>
@@ -73,6 +73,19 @@
     <url>https://github.com/teragrep/pth_07/tree/master</url>
   </scm>
   <dependencies>
+    <!-- spark-core includes a version too old -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>4.1.95.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-buffer</artifactId>
+      <version>4.1.95.Final</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.zeppelin</groupId>
       <artifactId>spark-interpreter</artifactId>
@@ -83,20 +96,27 @@
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-aws</artifactId>
-      <version>3.0.0</version>
+      <version>3.3.3</version>
       <scope>provided</scope>
     </dependency>
     <!-- spark -->
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_2.11</artifactId>
-      <version>2.4.5</version>
+      <artifactId>spark-core_2.12</artifactId>
+      <version>3.4.0</version>
       <scope>provided</scope>
+      <exclusions>
+        <!-- exclude old netty lib, newer dep version above -->
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-all</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-sql_2.11</artifactId>
-      <version>2.4.5</version>
+      <artifactId>spark-sql_2.12</artifactId>
+      <version>3.4.0</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -107,8 +127,8 @@
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming_2.11</artifactId>
-      <version>2.4.5</version>
+      <artifactId>spark-streaming_2.12</artifactId>
+      <version>3.4.0</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -125,8 +145,8 @@
     </dependency>
     <dependency>
       <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_2.11</artifactId>
-      <version>2.4.1</version>
+      <artifactId>kafka_2.12</artifactId>
+      <version>3.4.0</version>
       <scope>provided</scope>
     </dependency>
     <!-- rfc5424-parser -->
@@ -200,7 +220,7 @@
       <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
-        <version>0.15</version>
+        <version>0.16.1</version>
         <inherited>false</inherited>
         <executions>
           <execution>
@@ -212,15 +232,33 @@
         </executions>
         <configuration>
           <addDefaultLicenseMatchers>false</addDefaultLicenseMatchers>
+          <addDefaultLicenses>false</addDefaultLicenses>
+          <families>
+            <family>
+              <id>Teragrep</id>
+              <name>Affero General Public License v3</name>
+            </family>
+            <family>
+              <id>Apache</id>
+              <name>Apache License, Version 2.0</name>
+            </family>
+          </families>
           <licenses>
-            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-              <notes>Also allow the license url to be https.</notes>
-              <patterns>
-                <!-- all others -->
-                <pattern>https://github.com/teragrep/teragrep/blob/main/LICENSE</pattern>
-                <!-- Utils.java -->
-                <pattern>http://www.apache.org/licenses/LICENSE-2.0</pattern>
-              </patterns>
+            <license>
+              <copyright>
+                <owner>Suomen Kanuuna Oy</owner>
+                <start>2024</start>
+              </copyright>
+              <text>Teragrep DPL Spark Integration PTH-07</text>
+              <family>Teragrep</family>
+            </license>
+            <license>
+              <copyright>
+                <owner>Apache Software Foundation</owner>
+                <start>2024</start>
+              </copyright>
+              <text>Licensed to the Apache Software Foundation (ASF)</text>
+              <family>Apache</family>
             </license>
           </licenses>
           <consoleOutput>true</consoleOutput>
@@ -245,15 +283,12 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.4.1</version>
         <executions>
           <execution>
-            <id>enforce</id>
-            <phase>none</phase>
-          </execution>
-          <execution>
-            <id>enforce-maven</id>
+            <id>enforce-settings</id>
             <goals>
               <goal>enforce</goal>
             </goals>
@@ -262,17 +297,26 @@
                 <requireMavenVersion>
                   <version>3.2.5</version>
                 </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[1.8,1.9)</version>
+                </requireJavaVersion>
+                <banDynamicVersions>
+                  <ignores>
+                    <!-- Dependency io.grpc:grpc-core:jar:1.26.0 (provided) via org.apache.zeppelin:spark-interpreter:jar:0.10.1 -> org.apache.zeppelin:zeppelin-jupyter-interpreter:jar:0.10.1 -> io.grpc:grpc-netty:jar:1.26.0 is referenced with a banned dynamic version [1.26.0,1.26.0] -->
+                    <ignore>io.grpc:grpc-core</ignore>
+                  </ignores>
+                </banDynamicVersions>
+                <requirePluginVersions>
+                  <message>All plugins are required to contain specific version.</message>
+                  <unCheckedPluginList>org.apache.maven.plugins:maven-site-plugin,org.apache.maven.plugins:maven-resources-plugin,org.apache.maven.plugins:maven-clean-plugin,org.apache.maven.plugins:maven-install-plugin,org.apache.maven.plugins:maven-deploy-plugin,org.apache.maven.plugins:maven-compiler-plugin,org.apache.maven.plugins:maven-jar-plugin</unCheckedPluginList>
+                </requirePluginVersions>
+                <requireNoRepositories>
+                  <message>Do not use any external repositories.</message>
+                </requireNoRepositories>
               </rules>
             </configuration>
           </execution>
         </executions>
-        <configuration>
-          <rules>
-            <requireJavaVersion>
-              <version>1.7</version>
-            </requireJavaVersion>
-          </rules>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -341,7 +385,7 @@
   </build>
   <profiles>
     <profile>
-      <id>publish-maven-central</id>      
+      <id>publish-maven-central</id>
       <build>
         <plugins>
           <plugin>
@@ -379,7 +423,7 @@
       </distributionManagement>
     </profile>
     <profile>
-      <id>publish-github-packages</id>      
+      <id>publish-github-packages</id>
       <build>
         <plugins>
           <plugin>
