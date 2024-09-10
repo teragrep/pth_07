@@ -283,15 +283,12 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.4.1</version>
         <executions>
           <execution>
-            <id>enforce</id>
-            <phase>none</phase>
-          </execution>
-          <execution>
-            <id>enforce-maven</id>
+            <id>enforce-settings</id>
             <goals>
               <goal>enforce</goal>
             </goals>
@@ -300,17 +297,26 @@
                 <requireMavenVersion>
                   <version>3.2.5</version>
                 </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[1.8,1.9)</version>
+                </requireJavaVersion>
+                <banDynamicVersions>
+                  <ignores>
+                    <!-- Dependency io.grpc:grpc-core:jar:1.26.0 (provided) via org.apache.zeppelin:spark-interpreter:jar:0.10.1 -> org.apache.zeppelin:zeppelin-jupyter-interpreter:jar:0.10.1 -> io.grpc:grpc-netty:jar:1.26.0 is referenced with a banned dynamic version [1.26.0,1.26.0] -->
+                    <ignore>io.grpc:grpc-core</ignore>
+                  </ignores>
+                </banDynamicVersions>
+                <requirePluginVersions>
+                  <message>All plugins are required to contain specific version.</message>
+                  <unCheckedPluginList>org.apache.maven.plugins:maven-site-plugin,org.apache.maven.plugins:maven-resources-plugin,org.apache.maven.plugins:maven-clean-plugin,org.apache.maven.plugins:maven-install-plugin,org.apache.maven.plugins:maven-deploy-plugin,org.apache.maven.plugins:maven-compiler-plugin,org.apache.maven.plugins:maven-jar-plugin</unCheckedPluginList>
+                </requirePluginVersions>
+                <requireNoRepositories>
+                  <message>Do not use any external repositories.</message>
+                </requireNoRepositories>
               </rules>
             </configuration>
           </execution>
         </executions>
-        <configuration>
-          <rules>
-            <requireJavaVersion>
-              <version>1.7</version>
-            </requireJavaVersion>
-          </rules>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
