@@ -64,7 +64,7 @@
     <sha1/>
     <interpreter.name>spark</interpreter.name>
     <teragrep.pth_10.version>7.0.3</teragrep.pth_10.version>
-    <teragrep.rlo_06.version>4.3.0</teragrep.rlo_06.version>
+    <teragrep.rlo_06.version>9.0.1</teragrep.rlo_06.version>
     <teragrep.jue_01.version>0.4.3</teragrep.jue_01.version>
   </properties>
   <scm>
