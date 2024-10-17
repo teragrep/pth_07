@@ -161,8 +161,6 @@ public class DPLInterpreter extends AbstractInterpreter {
                 getZeppelinContext()
         );
 
-        Utils.printDeprecateMessage(sparkInterpreter.getSparkVersion(),
-                interpreterContext, properties);
         final String jobGroup = Utils.buildJobGroupId(interpreterContext);
         final String jobDesc = Utils.buildJobDesc(interpreterContext);
         sparkContext.setJobGroup(jobGroup, jobDesc, false);
@@ -193,7 +191,7 @@ public class DPLInterpreter extends AbstractInterpreter {
         try {
             output = dplExecutor.interpret(
                     userInterfaceManager,
-                    (SparkSession) sparkInterpreter.getSparkSession(),
+                    sparkInterpreter.getSparkSession(),
                     batchHandler,
                     interpreterContext.getNoteId(),
                     interpreterContext.getParagraphId(),
