@@ -63,7 +63,7 @@
     <changelist>-SNAPSHOT</changelist>
     <sha1/>
     <interpreter.name>spark</interpreter.name>
-    <teragrep.pth_10.version>7.2.4</teragrep.pth_10.version>
+    <teragrep.pth_10.version>7.2.5</teragrep.pth_10.version>
   </properties>
   <scm>
     <connection>scm:git:https://github.com/teragrep/pth_07.git</connection>
