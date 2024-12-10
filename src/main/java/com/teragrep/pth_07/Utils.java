@@ -126,20 +126,4 @@ class Utils {
     }
     return uName;
   }
-
-  public static void printDeprecateMessage(SparkVersion sparkVersion,
-                                            InterpreterContext context,
-                                            Properties properties) throws InterpreterException {
-    context.out.clear();
-    if (sparkVersion.olderThan(SparkVersion.SPARK_2_2_0)
-            && Boolean.parseBoolean(
-                    properties.getProperty("zeppelin.spark.deprecatedMsg.show", "true"))) {
-      try {
-        context.out.write(DEPRRECATED_MESSAGE);
-        context.out.write("%text ");
-      } catch (IOException e) {
-        throw new InterpreterException(e);
-      }
-    }
-  }
 }
